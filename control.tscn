@@ -1,7 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8c542rusbr2r"]
+[gd_scene load_steps=5 format=3 uid="uid://b8c542rusbr2r"]
+
+[ext_resource type="PackedScene" uid="uid://ciwcc3jewrla6" path="res://prefabs/paddle.tscn" id="1_0fbet"]
+[ext_resource type="Script" uid="uid://rago3utmjsxd" path="res://ball.gd" id="2_62e2m"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uchyk"]
 size = Vector2(1200, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qtu10"]
+size = Vector2(16, 16)
 
 [node name="Root" type="Control"]
 layout_mode = 3
@@ -47,3 +53,51 @@ shape = SubResource("RectangleShape2D_uchyk")
 
 [node name="Polygon2D" type="Polygon2D" parent="BottomWall"]
 polygon = PackedVector2Array(-600, -10, 600, -10, 600, 10, -600, 10)
+
+[node name="Paddle-0" parent="." node_paths=PackedStringArray("score_label") instance=ExtResource("1_0fbet")]
+position = Vector2(58, 308)
+score_label = NodePath("../HBoxContainer/Score-0")
+
+[node name="Paddle-1" parent="." node_paths=PackedStringArray("score_label") instance=ExtResource("1_0fbet")]
+position = Vector2(1088, 308)
+player_id = 1
+score_label = NodePath("../HBoxContainer/Score-1")
+
+[node name="Ball" type="CharacterBody2D" parent="." node_paths=PackedStringArray("paddle_0", "paddle_1")]
+position = Vector2(496, 269)
+script = ExtResource("2_62e2m")
+paddle_0 = NodePath("../Paddle-0")
+paddle_1 = NodePath("../Paddle-1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball"]
+shape = SubResource("RectangleShape2D_qtu10")
+
+[node name="Polygon2D" type="Polygon2D" parent="Ball"]
+polygon = PackedVector2Array(-8, -8, -8, 8, 8, 8, 8, -8)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="Ball"]
+rect = Rect2(-8, -8, 16, 16)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 12.0
+offset_bottom = 57.0
+grow_horizontal = 2
+
+[node name="Score-0" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "00"
+horizontal_alignment = 1
+
+[node name="Score-1" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "00"
+horizontal_alignment = 1
+
+[connection signal="screen_exited" from="Ball/VisibleOnScreenNotifier2D" to="Ball" method="_on_screen_exited"]
